@@ -7,6 +7,8 @@ import com.tournaments.tournaments.dto.TrainerMapper;
 import com.tournaments.tournaments.entities.TournamentRegistration;
 import com.tournaments.tournaments.entities.TournamentState;
 import com.tournaments.tournaments.entities.Trainer;
+import com.tournaments.tournaments.exceptions.TournamentFullException;
+import com.tournaments.tournaments.exceptions.TrainerAlreadyRegisterException;
 import com.tournaments.tournaments.repositories.TournamentRegistrationRepository;
 import com.tournaments.tournaments.repositories.TournamentRepository;
 import com.tournaments.tournaments.repositories.TournamentStateRepository;
@@ -83,11 +85,11 @@ public class TournamentRegistrationServiceImp implements TournamentRegistrationS
     @Override
     public void registerTrainerForTournament(Integer tournamentId, Integer trainerId) {
         if (isTrainerRegistered(tournamentId, trainerId)) {
-            throw new RuntimeException("Trainer is already registered for this tournament");
+            throw new TrainerAlreadyRegisterException("Trainer is already registered for this tournament");
         }
 
         if (getRegistrationsByTournamentId(tournamentId).size() >= tournamentRepository.getMinParticipantQuantityById(tournamentId)) {
-            throw new IllegalStateException("Tournament has reached maximum capacity");
+            throw new TournamentFullException("Tournament has reached maximum capacity");
         }
 
         TournamentRegistrationDTO registrationDTO = new TournamentRegistrationDTO(null, tournamentId, trainerId);
